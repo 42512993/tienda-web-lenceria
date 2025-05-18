@@ -39,13 +39,27 @@ def obtener_productos():
     return productos
 
 def descontar_stock(codigo, cantidad):
+    print(f"Intentando descontar {cantidad} unidades del producto {codigo}")
+    try:
+        cantidad = int(cantidad)
+    except ValueError:
+        print(f"❌ Error: cantidad inválida para {codigo}")
+        return
+
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute("SELECT cantidad FROM stock WHERE codigo = ?", (codigo,))
     actual = cursor.fetchone()
-    if actual and actual[0] >= cantidad:
-        cursor.execute("UPDATE stock SET cantidad = cantidad - ? WHERE codigo = ?", (cantidad, codigo))
-        conn.commit()
+    if actual:
+        print(f"Stock actual de {codigo}: {actual[0]}")
+        if actual[0] >= cantidad:
+            cursor.execute("UPDATE stock SET cantidad = cantidad - ? WHERE codigo = ?", (cantidad, codigo))
+            conn.commit()
+            print(f"✅ Descontado correctamente")
+        else:
+            print(f"⚠️ No hay suficiente stock para {codigo}")
+    else:
+        print(f"❌ Producto {codigo} no encontrado")
     conn.close()
 
 @app.route('/')
@@ -77,7 +91,9 @@ def carrito():
 @app.route('/confirmar', methods=['POST'])
 def confirmar():
     carrito = session.get('carrito', [])
+    print("🛒 Confirmando compra con los siguientes productos:")
     for item in carrito:
+        print(item)
         descontar_stock(item['codigo'], item['cantidad'])
     session.pop('carrito', None)
     return redirect('/confirmado')
