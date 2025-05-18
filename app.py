@@ -19,7 +19,6 @@ def inicializar_db():
             cantidad INTEGER
         )
     ''')
-    # Insertar datos de ejemplo solo si la tabla está vacía
     cursor.execute("SELECT COUNT(*) FROM stock")
     if cursor.fetchone()[0] == 0:
         productos = [
@@ -83,8 +82,31 @@ def confirmar():
     session['carrito'] = []
     return render_template("confirmado.html")
 
+@app.route('/admin')
+def admin():
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM stock")
+    stock = cursor.fetchall()
+    conn.close()
+    return render_template("admin.html", stock=stock)
+
+@app.route('/actualizar_stock', methods=['POST'])
+def actualizar_stock():
+    codigo = request.form['codigo']
+    descripcion = request.form['descripcion']
+    valor = float(request.form['valor'])
+    cantidad = int(request.form['cantidad'])
+
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("UPDATE stock SET descripcion = ?, valor = ?, cantidad = ? WHERE codigo = ?",
+                   (descripcion, valor, cantidad, codigo))
+    conn.commit()
+    conn.close()
+    return redirect('/admin')
+
 if __name__ == '__main__':
     inicializar_db()
     port = int(os.environ.get('PORT', 5000))
     app.run(debug=False, host='0.0.0.0', port=port)
-
