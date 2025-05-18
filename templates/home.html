@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head><title>Tienda Online</title></head>
+<body>
+<h1>Tienda Online</h1>
+<form action="/agregar" method="post">
+    <table border="1">
+        <tr><th>Código</th><th>Descripción</th><th>Precio</th><th>Stock</th><th>Cantidad</th><th>Agregar</th></tr>
+        {% for p in productos %}
+        <tr>
+            <td>{{ p[0] }}</td>
+            <td>{{ p[1] }}</td>
+            <td>${{ p[2] }}</td>
+            <td>{{ p[3] }}</td>
+            <td>
+                <input type="hidden" name="codigo" value="{{ p[0] }}">
+                <input type="hidden" name="descripcion" value="{{ p[1] }}">
+                <input type="hidden" name="valor" value="{{ p[2] }}">
+                <input type="number" name="cantidad" value="1" min="1" max="{{ p[3] }}">
+            </td>
+            <td><button type="submit">Comprar</button></td>
+        </tr>
+        {% endfor %}
+    </table>
+</form>
+<a href="/carrito">Ver carrito</a>
+</body>
+</html>

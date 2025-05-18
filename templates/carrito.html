@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head><title>Carrito</title></head>
+<body>
+<h1>Carrito</h1>
+<table border="1">
+    <tr><th>Producto</th><th>Cantidad</th><th>Precio</th><th>Subtotal</th></tr>
+    {% for item in carrito %}
+    <tr>
+        <td>{{ item.descripcion }}</td>
+        <td>{{ item.cantidad }}</td>
+        <td>${{ item.valor }}</td>
+        <td>${{ item.cantidad * item.valor }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<h3>Total: ${{ total }}</h3>
+<form action="/confirmar" method="post">
+    <button type="submit">Confirmar Compra</button>
+</form>
+<a href="/">Seguir comprando</a>
+</body>
+</html>
