@@ -79,7 +79,11 @@ def confirmar():
     carrito = session.get('carrito', [])
     for item in carrito:
         descontar_stock(item['codigo'], item['cantidad'])
-    session['carrito'] = []
+    session.pop('carrito', None)
+    return redirect('/confirmado')
+
+@app.route('/confirmado')
+def confirmado():
     return render_template("confirmado.html")
 
 @app.route('/admin')
